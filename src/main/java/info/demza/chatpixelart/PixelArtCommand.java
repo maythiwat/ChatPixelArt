@@ -12,6 +12,10 @@ import java.util.stream.Collectors;
 
 public class PixelArtCommand implements CommandExecutor {
 
+    public void printException(CommandSender sender, PixelArtException exception) {
+        sender.sendMessage(ChatColor.RED + exception.getMessage());
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (ChatPixelArt.getInstance().getConfig().getBoolean("require-op") && !sender.isOp()) {
@@ -29,9 +33,13 @@ public class PixelArtCommand implements CommandExecutor {
                 return false;
             }
             String raw = ChatPixelArt.getInstance().getConfig().getString("images." + args[1]);
-            BufferedImage image = PixelArtUtils.base64Image(raw);
-            BaseComponent[] bc = PixelArtUtils.bufferToComponent(image);
-            sender.spigot().sendMessage(bc);
+            try {
+                BufferedImage image = PixelArtUtils.base64Image(raw);
+                BaseComponent[] bc = PixelArtUtils.bufferToComponent(image);
+                sender.spigot().sendMessage(bc);
+            } catch (PixelArtException e) {
+                printException(sender, e);
+            }
             return true;
         }
 
@@ -41,9 +49,13 @@ public class PixelArtCommand implements CommandExecutor {
                 return false;
             }
             String raw = Arrays.stream(args).skip(1).collect(Collectors.joining(" "));
-            BufferedImage image = PixelArtUtils.base64Image(raw);
-            BaseComponent[] bc = PixelArtUtils.bufferToComponent(image);
-            sender.spigot().sendMessage(bc);
+            try {
+                BufferedImage image = PixelArtUtils.base64Image(raw);
+                BaseComponent[] bc = PixelArtUtils.bufferToComponent(image);
+                sender.spigot().sendMessage(bc);
+            } catch (PixelArtException e) {
+                printException(sender, e);
+            }
             return true;
         }
 

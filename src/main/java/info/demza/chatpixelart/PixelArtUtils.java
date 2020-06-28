@@ -12,7 +12,7 @@ import java.util.Base64;
 
 public class PixelArtUtils {
 
-    public static BufferedImage base64Image(String raw) {
+    public static BufferedImage base64Image(String raw) throws PixelArtException {
         String[] split = raw.split(",");
         if (split.length == 2) {
             raw = split[1];
@@ -27,29 +27,33 @@ public class PixelArtUtils {
             image = ImageIO.read(bis);
             bis.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new PixelArtException("Incorrect base64 format");
         }
 
         return image;
     }
 
-    public static BaseComponent[] bufferToComponent(BufferedImage image) {
-        ComponentBuilder cb = new ComponentBuilder();
+    public static BaseComponent[] bufferToComponent(BufferedImage image) throws PixelArtException {
+        try {
+            ComponentBuilder cb = new ComponentBuilder();
 
-        int w = image.getWidth();
-        int h = image.getHeight();
+            int w = image.getWidth();
+            int h = image.getHeight();
 
-        for (int i = 0; i < h; i++) {
-            for (int j = 0; j < w; j++) {
-                String hexColor = rgbToHex(new Color(image.getRGB(j, i)));
-                cb.append("█").color(ChatColor.of(hexColor));
+            for (int i = 0; i < h; i++) {
+                for (int j = 0; j < w; j++) {
+                    String hexColor = rgbToHex(new Color(image.getRGB(j, i)));
+                    cb.append("█").color(ChatColor.of(hexColor));
+                }
+                if (i != (h - 1)) {
+                    cb.append("\n");
+                }
             }
-            if (i != (h - 1)) {
-                cb.append("\n");
-            }
+
+            return cb.create();
+        } catch (Exception e) {
+            throw new PixelArtException("Invalid image");
         }
-
-        return cb.create();
     }
 
     public static String rgbToHex(Color color) {
