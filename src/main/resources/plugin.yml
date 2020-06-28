@@ -1,0 +1,8 @@
+name: ChatPixelArt
+version: ${project.version}
+main: info.demza.chatpixelart.ChatPixelArt
+api-version: 1.16
+description: o kawaii koto
+author: Maythiwat
+commands:
+  pixelart:
